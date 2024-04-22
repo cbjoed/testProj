@@ -25,12 +25,19 @@ public class DagligFast : Ordination {
 
     public override double doegnDosis()
     {
+<<<<<<< Updated upstream
         // giver sum af de 4 dose tidspunkter
         return MorgenDosis.antal + MiddagDosis.antal + AftenDosis.antal + NatDosis.antal;
     }
 
 
 
+=======
+      
+    }
+
+
+>>>>>>> Stashed changes
     public Dosis[] getDoser() {
 		Dosis[] doser = {MorgenDosis, MiddagDosis, AftenDosis, NatDosis};
 		return doser;

@@ -131,27 +131,112 @@ public class DataService
     }
 
     public PN OpretPN(int patientId, int laegemiddelId, double antal, DateTime startDato, DateTime slutDato) {
-        // TODO: Implement!
-        return null!;
+    
+        {
+            // Find patienten og lægemidlet baseret på de angivne id'er
+            Patient patient = db.Patienter.Find(patientId);
+            Laegemiddel laegemiddel = db.Laegemiddler.Find(laegemiddelId);
+
+            // Tjek om patienten og lægemidlet eksisterer
+            if (patient == null || laegemiddel == null)
+            {
+                throw new ArgumentException("Ugyldig patient eller lægemiddel.");
+            }
+
+            // Opret en ny PN med de angivne oplysninger
+            PN pn = new PN(startDato, slutDato, antal, laegemiddel);
+
+            // Tilføj PN til patientens ordinationer
+            patient.ordinationer.Add(pn);
+
+            // Gem ændringer i databasen
+            db.SaveChanges();
+
+            return pn;
+        }
+
     }
 
-    public DagligFast OpretDagligFast(int patientId, int laegemiddelId, 
-        double antalMorgen, double antalMiddag, double antalAften, double antalNat, 
-        DateTime startDato, DateTime slutDato) {
+    public DagligFast OpretDagligFast(int patientId, int laegemiddelId,
+      double antalMorgen, double antalMiddag, double antalAften, double antalNat,
+      DateTime startDato, DateTime slutDato)
+    {
 
-        // TODO: Implement!
-        return null!;
+        // Find patienten og lægemidlet baseret på de angivne id'er
+        Patient patient = db.Patienter.Find(patientId);
+        Laegemiddel laegemiddel = db.Laegemiddler.Find(laegemiddelId);
+
+        // Tjek om patienten og lægemidlet eksisterer
+        if (patient == null || laegemiddel == null)
+        {
+            throw new ArgumentException("Ugyldig patient eller lægemiddel.");
+        }
+
+        // Opret en ny DagligFast med de angivne oplysninger
+        DagligFast dagligFast = new DagligFast(startDato, slutDato, laegemiddel, antalMorgen, antalMiddag, antalAften, antalNat);
+
+        // Tilføj DagligFast til patientens ordinationer
+        patient.ordinationer.Add(dagligFast);
+
+        // Gem ændringer i databasen
+        db.SaveChanges();
+
+        return dagligFast;
     }
 
-    public DagligSkæv OpretDagligSkaev(int patientId, int laegemiddelId, Dosis[] doser, DateTime startDato, DateTime slutDato) {
-        // TODO: Implement!
-        return null!;
+
+    public DagligSkæv OpretDagligSkaev(int patientId, int laegemiddelId, Dosis[] doser, DateTime startDato, DateTime slutDato)
+    {
+        // Find patienten og lægemidlet baseret på de angivne id'er
+        Patient patient = db.Patienter.Find(patientId);
+        Laegemiddel laegemiddel = db.Laegemiddler.Find(laegemiddelId);
+
+        // Tjek om patienten og lægemidlet eksisterer
+        if (patient == null || laegemiddel == null)
+        {
+            throw new ArgumentException("Ugyldig patient eller lægemiddel.");
+        }
+
+        // Opret en ny DagligSkæv med de angivne oplysninger
+        DagligSkæv dagligSkæv = new DagligSkæv(startDato, slutDato, laegemiddel);
+
+        // Tilføj doserne til en liste inde i DagligSkæv
+        dagligSkæv.doser.AddRange(doser.ToList());
+
+        // Tilføj DagligSkæv til patientens ordinationer
+        patient.ordinationer.Add(dagligSkæv);
+
+        // Gem ændringer i databasen
+        db.SaveChanges();
+
+        return dagligSkæv;
     }
 
-    public string AnvendOrdination(int id, Dato dato) {
-        // TODO: Implement!
-        return null!;
+
+    public string AnvendOrdination(int id, Dato dato)
+    {
+        // Find PN-ordinationen baseret på det angivne id
+        PN ordination = db.PNs.Find(id);
+
+        // Tjek om ordinationen blev fundet
+        if (ordination == null)
+        {
+            return "Ordinationen blev ikke fundet.";
+        }
+
+        // Tjek om den angivne dato er inden for ordinationens gyldighedsperiode
+        if (dato.dato >= ordination.startDen && dato.dato <= ordination.slutDen)
+        {
+            // Anvend ordinationen ved at tilføje datoen til listen over doser
+            ordination.givDosis(dato);
+            return "Ordinationen blev anvendt på " + dato.ToString();
+        }
+        else
+        {
+            return "Fejl: Den angivne dato er uden for ordinationens gyldighedsperiode.";
+        }
     }
+
 
     /// <summary>
     /// Den anbefalede dosis for den pågældende patient, per døgn, hvor der skal tages hensyn til
@@ -160,9 +245,68 @@ public class DataService
     /// <param name="patient"></param>
     /// <param name="laegemiddel"></param>
     /// <returns></returns>
-	public double GetAnbefaletDosisPerDøgn(int patientId, int laegemiddelId) {
-        // TODO: Implement!
-        return -1;
-	}
-    
+
+    private Patient getPatientById(int patientId)
+    {
+        return db.Patienter.Find(patientId);
+    }
+
+    // Metode til at hente lægemiddel fra databasen baseret på lægemidlets ID
+    private Laegemiddel getLaegemiddelById(int laegemiddelId)
+    {
+        return db.Laegemiddler.Find(laegemiddelId);
+    }
+
+    // Metode til at bestemme vægtklassen baseret på patientens vægt
+    private String bestemVægtKlasse(double vægt)
+    {
+        if (vægt < 25)
+        {
+            return "Under 25";
+        }
+        else if (vægt <= 120)
+        {
+            return "Normal";
+        }
+        else
+        {
+            return "Over 120";
+        }
+    }
+
+    // Metode til at beregne den anbefalede dosis per døgn baseret på patientens ID og lægemidlets ID
+    public double GetAnbefaletDosisPerDøgn(int patientId, int laegemiddelId)
+    {
+        // Hent patient og lægemiddel fra databasen
+        Patient patient = getPatientById(patientId);
+        Laegemiddel lægemiddel = getLaegemiddelById(laegemiddelId);
+
+        // Tjek om patient og lægemiddel blev fundet
+        if (patient == null || lægemiddel == null)
+        {
+            throw new ArgumentException("Ugyldig patient eller lægemiddel.");
+        }
+
+        // Beregn den anbefalede dosis
+        String vægtKlasse = bestemVægtKlasse(patient.vaegt);
+        double dosis = 0;
+
+        switch (vægtKlasse)
+        {
+            case "Under 25":
+                dosis = patient.vaegt * lægemiddel.enhedPrKgPrDoegnLet;
+                break;
+            case "Normal":
+                dosis = patient.vaegt * lægemiddel.enhedPrKgPrDoegnNormal;
+                break;
+            case "Over 120":
+                dosis = patient.vaegt * lægemiddel.enhedPrKgPrDoegnTung;
+                break;
+            default:
+                throw new InvalidOperationException("Ugyldig vægtklasse.");
+        }
+
+        return dosis;
+    }
+
 }

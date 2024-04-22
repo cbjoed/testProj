@@ -21,10 +21,18 @@ public class DagligSkæv : Ordination {
 		return base.antalDage() * doegnDosis();
 	}
 
-	public override double doegnDosis() {
-		// TODO: Implement!
-        return -1;
-	}
+	 public override double doegnDosis()
+        {
+            double samletDosis = 0;
+
+            // Summer dosismængden for alle doser
+            foreach (var dosis in doser)
+            {
+                samletDosis += dosis.antal;
+            }
+
+            return samletDosis;
+        }
 
 	public override String getType() {
 		return "DagligSkæv";

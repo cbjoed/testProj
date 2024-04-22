@@ -1,14 +1,17 @@
 namespace shared.Model;
 
-public class PN : Ordination {
-	public double antalEnheder { get; set; }
+public class PN : Ordination
+{
+    public double antalEnheder { get; set; }
     public List<Dato> dates { get; set; } = new List<Dato>();
 
-    public PN (DateTime startDen, DateTime slutDen, double antalEnheder, Laegemiddel laegemiddel) : base(laegemiddel, startDen, slutDen) {
-		this.antalEnheder = antalEnheder;
-	}
+    public PN(DateTime startDen, DateTime slutDen, double antalEnheder, Laegemiddel laegemiddel) : base(laegemiddel, startDen, slutDen)
+    {
+        this.antalEnheder = antalEnheder;
+    }
 
-    public PN() : base(null!, new DateTime(), new DateTime()) {
+    public PN() : base(null!, new DateTime(), new DateTime())
+    {
     }
 
     /// <summary>
@@ -16,26 +19,51 @@ public class PN : Ordination {
     /// Returnerer true hvis givesDen er inden for ordinationens gyldighedsperiode og datoen huskes
     /// Returner false ellers og datoen givesDen ignoreres
     /// </summary>
-    public bool givDosis(Dato givesDen) {
-        // TODO: Implement!
-        return false;
+    ///
+
+    public bool givDosis(Dato givesDen)
+    {
+        // Tjek om givesDen er inden for ordinationens gyldighedsperiode
+        if (givesDen.dato >= startDen && givesDen.dato <= slutDen)
+        {
+            // Tilføj givesDen til listen over dosis datoer
+            dates.Add(givesDen);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    public override double doegnDosis() {
-    	// TODO: Implement!
-        return -1;
+    public override double doegnDosis()
+    {
+        if (dates.Count == 0)
+        {
+            return 0; // Hvis der ikke er givet nogen doser, er døgndosis 0
+        }
+
+        // Find antallet af dage mellem første og sidste givning
+        TimeSpan span = dates.Last().dato.Date - dates.First().dato.Date;
+        int antalDageMellemGivninger = span.Days + 1; // Inklusive både første og sidste dag
+
+        // Beregn døgndosis
+        double dogndosis = (dates.Count * antalEnheder) / antalDageMellemGivninger;
+        return dogndosis;
     }
 
-
-    public override double samletDosis() {
+    public override double samletDosis()
+    {
         return dates.Count() * antalEnheder;
     }
 
-    public int getAntalGangeGivet() {
+    public int getAntalGangeGivet()
+    {
         return dates.Count();
     }
 
-	public override String getType() {
-		return "PN";
-	}
+    public override String getType()
+    {
+        return "PN";
+    }
 }

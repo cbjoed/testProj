@@ -20,9 +20,10 @@ public abstract class Ordination {
     /// <summary>
     /// Antal hele dage mellem startdato og slutdato. Begge dage inklusive.
     /// </summary>
-    public int antalDage() {
-        // TODO: Implement!
-        return -1;
+    public int antalDage()
+    {
+        TimeSpan span = slutDen.Date - startDen.Date;
+        return span.Days + 1; // inklusive både start- og slutdato
     }
 
     public override String ToString() {

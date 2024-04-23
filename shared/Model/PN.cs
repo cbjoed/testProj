@@ -47,9 +47,12 @@ public class PN : Ordination
         TimeSpan span = dates.Last().dato.Date - dates.First().dato.Date;
         int antalDageMellemGivninger = span.Days + 1; // Inklusive både første og sidste dag
 
-        // Beregn døgndosis
-        double dogndosis = (dates.Count * antalEnheder) / antalDageMellemGivninger;
-        return dogndosis;
+        else
+        {
+            // Beregn og returner den reelle døgndosis
+            double dogndosis = (dates.Count * antalEnheder) / antalDageMellemGivninger;
+            return dogndosis;
+        }
     }
 
     public override double samletDosis()

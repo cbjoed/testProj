@@ -44,35 +44,16 @@ public class PN : Ordination
         }
         else
         {
-            // Opret en dictionary til at holde styr på total dosis for hver dag
-            Dictionary<DateTime, double> doserPerDag = new Dictionary<DateTime, double>();
+            // Find antallet af dage mellem første og sidste givning
+            TimeSpan span = dates.Last().dato.Date - dates.First().dato.Date;
+            int antalDageMellemGivninger = span.Days + 1; // Inklusive både første og sidste dag
 
-            // Beregn total dosis for hver dag
-            foreach (var dato in dates)
-            {
-                // Hvis datoen allerede eksisterer i dictionary, læg dosis til den eksisterende værdi
-                if (doserPerDag.ContainsKey(dato.dato.Date))
-                {
-                    doserPerDag[dato.dato.Date] += this.antalEnheder;
-                }
-                // Ellers tilføj datoen til dictionary med dosis som værdi
-                else
-                {
-                    doserPerDag.Add(dato.dato.Date, this.antalEnheder);
-                }
-            }
-
-            // Tæl antallet af unikke dage
-            int antalUnikkeDage = doserPerDag.Count;
-
-            // Beregn og returner den gennemsnitlige døgndosis
-            double totalDosis = doserPerDag.Sum(kv => kv.Value);
-            double døgndosis = totalDosis / antalUnikkeDage;
+            // Beregn og returner den reelle døgndosis
+            double døgndosis = (dates.Count * antalEnheder) / antalDageMellemGivninger;
 
             return døgndosis;
         }
     }
-
 
 
     public override double samletDosis()

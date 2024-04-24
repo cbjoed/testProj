@@ -225,11 +225,13 @@ public class DataService
         }
 
         // Tjek om den angivne dato er inden for ordinationens gyldighedsperiode
-        if (dato.dato >= ordination.startDen && dato.dato <= ordination.slutDen)
-        {
+       
             // Anvend ordinationen ved at tilføje datoen til listen over doser
-            ordination.givDosis(dato);
-            return "Ordinationen blev anvendt på " + dato.ToString();
+           if (ordination.givDosis(dato))
+        {
+            db.SaveChanges();
+            
+            return "Ordinationen blev anvendt på " + dato.dato.ToString();
         }
         else
         {

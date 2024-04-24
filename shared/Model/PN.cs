@@ -38,21 +38,30 @@ public class PN : Ordination
 
     public override double doegnDosis()
     {
-        if (dates.Count == 0)
+        double sum = 0;
+        if (dates.Count() > 0)
         {
-            return 0; // Hvis der ikke er givet nogen doser, er døgndosis 0
-        }
-        else
-        {
-            // Find antallet af dage mellem første og sidste givning
-            TimeSpan span = dates.Last().dato.Date - dates.First().dato.Date;
-            int antalDageMellemGivninger = span.Days + 1; // Inklusive både første og sidste dag
+            DateTime min = dates.First().dato;
+            DateTime max = dates.First().dato;
 
-            // Beregn og returner den reelle døgndosis
-            double døgndosis = (dates.Count * antalEnheder) / antalDageMellemGivninger;
+            foreach (Dato d in dates)
+            {
+                if (d.dato < min)
+                {
+                    min = d.dato;
+                }
+                if (d.dato > max)
+                {
+                    max = d.dato;
+                }
+            }
 
-            return døgndosis;
+            int dage = (int)(max - min).TotalDays + 1;
+            sum = samletDosis() / dage;
+
+
         }
+        return sum;
     }
 
 

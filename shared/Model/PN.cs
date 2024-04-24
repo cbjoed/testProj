@@ -42,18 +42,19 @@ public class PN : Ordination
         {
             return 0; // Hvis der ikke er givet nogen doser, er døgndosis 0
         }
-
-        // Find antallet af dage mellem første og sidste givning
-        TimeSpan span = dates.Last().dato.Date - dates.First().dato.Date;
-        int antalDageMellemGivninger = span.Days + 1; // Inklusive både første og sidste dag
-
         else
         {
+            // Find antallet af dage mellem første og sidste givning
+            TimeSpan span = dates.Last().dato.Date - dates.First().dato.Date;
+            int antalDageMellemGivninger = span.Days + 1; // Inklusive både første og sidste dag
+
             // Beregn og returner den reelle døgndosis
-            double dogndosis = (dates.Count * antalEnheder) / antalDageMellemGivninger;
-            return dogndosis;
+            double døgndosis = (dates.Count * antalEnheder) / antalDageMellemGivninger;
+
+            return døgndosis;
         }
     }
+
 
     public override double samletDosis()
     {

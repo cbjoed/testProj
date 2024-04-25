@@ -52,6 +52,48 @@ namespace ordination_test
         }
 
         [TestMethod]
+        public void PNDoegnDosis()
+        {
+            // input
+            Laegemiddel lm = service.GetLaegemidler().First();
+            DateTime startDato = DateTime.Now;
+            DateTime slutDato = DateTime.Now.AddDays(3);
+            double antalEnheder = 3;
+
+            // Opret en PN
+            PN pnOrdination = new PN(startDato, slutDato, antalEnheder, lm);
+
+            // Opret en liste af Dato-objekter hvor doseringen gives
+            List<Dato> doseringsDatoer = new List<Dato>
+            {
+                new Dato { dato = DateTime.Now.AddDays(-3) },
+                new Dato { dato = DateTime.Now.AddDays(-2) },
+                new Dato { dato = DateTime.Now.AddDays(-1) }
+            };
+
+            // Giv dosis på forskellige datoer
+            foreach (var doseringsDato in doseringsDatoer)
+            {
+                pnOrdination.givDosis(doseringsDato);
+            }
+
+            // Beregn antal dage, hvor dosis er givet
+            double antalAnvendteDage = doseringsDatoer.Count;
+
+            // Beregn antal mulige datoer, hvor dosis kan gives
+            double antalMuligeDatoer = (slutDato - startDato).Days + 1;
+
+            // Beregn forventet døgndosis
+            double forventetDoegnDosis = (antalEnheder * antalAnvendteDage) / antalMuligeDatoer;
+
+            // Act
+            double beregnetDoegnDosis = pnOrdination.doegnDosis();
+
+            // Assert
+            Assert.AreEqual(forventetDoegnDosis, beregnetDoegnDosis);
+        }
+
+        [TestMethod]
         public void AnvendPNOrdinationt() {
         ///TODO
         }

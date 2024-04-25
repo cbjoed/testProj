@@ -1,6 +1,7 @@
 ﻿using Data;
 using Microsoft.EntityFrameworkCore;
 using Service;
+using shared.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,31 @@ namespace ordination_test
         [TestMethod]
         public void PNDoegnDosis()
         {
-            ///TODO
+
+
+            [TestMethod]
+            void BeregnDoegnDosisForDagligFast()
+            {
+                // Arrange
+                Patient patient = service.GetPatienter().First();
+                Laegemiddel lm = service.GetLaegemidler().First();
+                DateTime startDato = DateTime.Now;
+                DateTime slutDato = DateTime.Now.AddDays(3);
+                double morgenAntal = 2;
+                double middagAntal = 2;
+                double aftenAntal = 1;
+                double natAntal = 0;
+
+                // Opret en instans af DagligFast
+                DagligFast dagligFast = new DagligFast(startDato, slutDato, lm, morgenAntal, middagAntal, aftenAntal, natAntal);
+
+                // Act
+                double forventetDoegnDosis = morgenAntal + middagAntal + aftenAntal + natAntal;
+                double beregnetDoegnDosis = dagligFast.doegnDosis();
+
+                // Assert
+                Assert.AreEqual(forventetDoegnDosis, beregnetDoegnDosis);
+            }///TODO
         }
         [TestMethod]
         public void OpretDagligFast()

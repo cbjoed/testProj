@@ -51,5 +51,9 @@ namespace ordination_test
             Assert.AreEqual(forventetDoegnDosis, beregnetDoegnDosis);
         }
 
+        [TestMethod]
+        public void AnvendPNOrdinationt() {
+        ///TODO
+        }
     }
 }

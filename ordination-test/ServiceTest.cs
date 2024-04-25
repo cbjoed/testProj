@@ -41,7 +41,21 @@ public class ServiceTest
         Assert.AreEqual(2, service.GetDagligFaste().Count());
     }
 
+    [TestMethod]
+    public void OpretDagligSkæv()
+    {
+        ///TODO
+    }
+    [TestMethod]
+    public void OpretPN()
+    {
+        ///TODO
+    }
+    [TestMethod]
+    public void VægtKategori()
+    {
+        ///TODO
+    }
 
-  
 
 }

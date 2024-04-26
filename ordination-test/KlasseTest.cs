@@ -52,45 +52,26 @@ namespace ordination_test
         }
 
         [TestMethod]
-        public void PNDoegnDosis()
+        public void TestDoegnDosis()
         {
-            // input
-            Laegemiddel lm = service.GetLaegemidler().First();
-            DateTime startDato = DateTime.Now;
-            DateTime slutDato = DateTime.Now.AddDays(3);
+            // Arrange
+            DateTime startDen = DateTime.Now;
+            DateTime slutDen = DateTime.Now.AddDays(3);
             double antalEnheder = 3;
+            PN pnOrdination = new PN(startDen, slutDen, antalEnheder, new Laegemiddel());
 
-            // Opret en PN
-            PN pnOrdination = new PN(startDato, slutDato, antalEnheder, lm);
+            // Add sample dates
+            pnOrdination.dates.Add(new Dato { dato = DateTime.Now.AddDays(1).AddHours(8).AddMinutes(30) }); // Eksempel på en dato med specifikt tidspunkt
+            pnOrdination.dates.Add(new Dato { dato = DateTime.Now.AddDays(2).AddHours(10).AddMinutes(15) });
+            pnOrdination.dates.Add(new Dato { dato = DateTime.Now.AddDays(3).AddHours(9).AddMinutes(45) });
 
-            // Opret en liste af Dato-objekter hvor doseringen gives
-            List<Dato> doseringsDatoer = new List<Dato>
-            {
-                new Dato { dato = DateTime.Now.AddDays(-3) },
-                new Dato { dato = DateTime.Now.AddDays(-2) },
-                new Dato { dato = DateTime.Now.AddDays(-1) }
-            };
-
-            // Giv dosis på forskellige datoer
-            foreach (var doseringsDato in doseringsDatoer)
-            {
-                pnOrdination.givDosis(doseringsDato);
-            }
-
-            // Beregn antal dage, hvor dosis er givet
-            double antalAnvendteDage = doseringsDatoer.Count;
-
-            // Beregn antal mulige datoer, hvor dosis kan gives
-            double antalMuligeDatoer = (slutDato - startDato).Days + 1;
-
-            // Beregn forventet døgndosis
-            double forventetDoegnDosis = (antalEnheder * antalAnvendteDage) / antalMuligeDatoer;
+            // Expected average dose per day = (3 * 3) / 3 = 3
 
             // Act
-            double beregnetDoegnDosis = pnOrdination.doegnDosis();
+            double result = pnOrdination.doegnDosis();
 
             // Assert
-            Assert.AreEqual(forventetDoegnDosis, beregnetDoegnDosis);
+            Assert.AreEqual(3, result);
         }
 
         [TestMethod]

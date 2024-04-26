@@ -36,34 +36,7 @@ public class PN : Ordination
         }
     }
 
-    public override double doegnDosis()
-    {
-        double sum = 0;
-        if (dates.Count() > 0)
-        {
-            DateTime min = dates.First().dato;
-            DateTime max = dates.First().dato;
-
-            foreach (Dato d in dates)
-            {
-                if (d.dato < min)
-                {
-                    min = d.dato;
-                }
-                if (d.dato > max)
-                {
-                    max = d.dato;
-                }
-            }
-
-            int dage = (int)(max - min).TotalDays + 1;
-            sum = samletDosis() / dage;
-
-
-        }
-        return sum;
-    }
-
+  
 
     public override double samletDosis()
     {
@@ -74,6 +47,22 @@ public class PN : Ordination
     {
         return dates.Count();
     }
+
+
+    public override double doegnDosis()
+    {
+        if (dates.Count == 0)
+            return 0;
+
+        DateTime min = dates.Min(d => d.dato);
+        DateTime max = dates.Max(d => d.dato);
+
+        int dage = (int)(max - min).TotalDays + 1;
+        double gennemsnitligDosisPerDag = samletDosis() / dage;
+
+        return gennemsnitligDosisPerDag;
+    }
+
 
     public override String getType()
     {

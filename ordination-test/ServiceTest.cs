@@ -99,4 +99,17 @@ public class ServiceTest
         }
 
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(System.InvalidOperationException))]
+    public void GetAnbefaletDosisPerDøgn_ThrowsExceptionWhenPatientIdIsNull()
+    {
+        // Arrange
+        int? nullPatientId = null;
+        int existingLægemiddelId = 1; // Vælg et eksisterende lægemiddelId fra databasen
+
+        // Act & Assert
+        service.GetAnbefaletDosisPerDøgn(nullPatientId.Value, existingLægemiddelId);
+    }
+
 }

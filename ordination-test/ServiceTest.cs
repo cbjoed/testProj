@@ -48,7 +48,13 @@ public class ServiceTest
 
         Patient patient = service.GetPatienter().First();
         Laegemiddel lm = service.GetLaegemidler().First();
-        Dosis[] doser = new Dosis[] { }; 
+        Dosis[] doser = new Dosis[] {
+        new Dosis(DateTime.Today.AddHours(8).AddMinutes(45), 3),  // 08:45
+        new Dosis(DateTime.Today.AddHours(11).AddMinutes(20), 3), // 11:20
+        new Dosis(DateTime.Today.AddHours(13).AddMinutes(45), 3), // 13:45
+        new Dosis(DateTime.Today.AddHours(16).AddMinutes(20), 3), // 16:20
+        new Dosis(DateTime.Today.AddHours(18).AddMinutes(45), 3)  // 18:45                  
+        };
         DateTime startDato = DateTime.Now;
         DateTime slutDato = DateTime.Now.AddDays(3);
 
@@ -59,10 +65,24 @@ public class ServiceTest
         Assert.IsNotNull(result); 
     }
 
+   
+
     [TestMethod]
     public void OpretPN()
     {
-        ///TODO
+        {
+            // Arrange
+            Patient patient = service.GetPatienter().First();
+            Laegemiddel lm = service.GetLaegemidler().First();
+            DateTime startDato = DateTime.Now;
+            DateTime slutDato = DateTime.Now.AddDays(3);
+
+            // Act
+            var oprettetPN = service.OpretPN(patient.PatientId, lm.LaegemiddelId, 3, startDato, slutDato);
+
+            // Assert
+            Assert.IsNotNull(oprettetPN);
+        }
     }
 
     [TestMethod]
@@ -101,15 +121,19 @@ public class ServiceTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(System.InvalidOperationException))]
-    public void GetAnbefaletDosisPerDøgn_ThrowsExceptionWhenPatientIdIsNull()
+    
+    public void DatoException()
     {
-        // Arrange
-        int? nullPatientId = null;
-        int existingLægemiddelId = 1; 
+        Patient patient = service.GetPatienter().First();
+        Laegemiddel lm = service.GetLaegemidler().First();
 
-        // Act & Assert
-        service.GetAnbefaletDosisPerDøgn(nullPatientId.Value, existingLægemiddelId);
+        Assert.ThrowsException<ArgumentException>(() =>
+        {
+            // slutdato før startdato
+            service.OpretDagligFast(patient.PatientId, lm.LaegemiddelId,
+                2, 2, 1, 0, DateTime.Now.AddDays(3), DateTime.Now);
+        });
     }
+
 
 }

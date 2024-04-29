@@ -142,6 +142,10 @@ public class DataService
             {
                 throw new ArgumentException("Ugyldig patient eller lægemiddel.");
             }
+            if (slutDato < startDato)
+            {
+                throw new ArgumentException("Slutdatoen kan ikke være før startdatoen.");
+            }
 
             // Opret en ny PN med de angivne oplysninger
             PN pn = new PN(startDato, slutDato, antal, laegemiddel);
@@ -172,6 +176,11 @@ public class DataService
             throw new ArgumentException("Ugyldig patient eller lægemiddel.");
         }
 
+        if (slutDato < startDato)
+        {
+            throw new ArgumentException("Slutdatoen kan ikke være før startdatoen.");
+        }
+
         // Opret en ny DagligFast med de angivne oplysninger
         DagligFast dagligFast = new DagligFast(startDato, slutDato, laegemiddel, antalMorgen, antalMiddag, antalAften, antalNat);
 
@@ -195,6 +204,10 @@ public class DataService
         if (patient == null || laegemiddel == null)
         {
             throw new ArgumentException("Ugyldig patient eller lægemiddel.");
+        }
+        if (slutDato < startDato)
+        {
+            throw new ArgumentException("Slutdatoen kan ikke være før startdatoen.");
         }
 
         // Opret en ny DagligSkæv med de angivne oplysninger
@@ -223,11 +236,11 @@ public class DataService
         {
             return "Ordinationen blev ikke fundet.";
         }
-
+        
         // Tjek om den angivne dato er inden for ordinationens gyldighedsperiode
-       
-            // Anvend ordinationen ved at tilføje datoen til listen over doser
-           if (ordination.givDosis(dato))
+
+        // Anvend ordinationen ved at tilføje datoen til listen over doser
+        if (ordination.givDosis(dato))
         {
             db.SaveChanges();
             

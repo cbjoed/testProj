@@ -45,15 +45,15 @@ public class ServiceTest
     [TestMethod]
     public void OpretDagligSkaev()
     {
-        
-        int patientId = 1; 
-        int laegemiddelId = 1; 
+
+        Patient patient = service.GetPatienter().First();
+        Laegemiddel lm = service.GetLaegemidler().First();
         Dosis[] doser = new Dosis[] { }; 
         DateTime startDato = DateTime.Now;
         DateTime slutDato = DateTime.Now.AddDays(3);
 
         
-        DagligSkæv result = service.OpretDagligSkaev(patientId, laegemiddelId, doser, startDato, slutDato);
+        DagligSkæv result = service.OpretDagligSkaev(patient.PatientId, lm.LaegemiddelId, doser, startDato, slutDato);
 
         
         Assert.IsNotNull(result); 
@@ -66,14 +66,14 @@ public class ServiceTest
     }
 
     [TestMethod]
-    public void VægtKategori()
+    public void AnbefaletDosis()
     {
-        
-        int patientId = 1; 
-        int laegemiddelId = 1; 
 
-        
-        double recommendedDose = service.GetAnbefaletDosisPerDøgn(patientId, laegemiddelId);
+        Patient patient = service.GetPatienter().First();
+        Laegemiddel lm = service.GetLaegemidler().First();
+
+
+        double recommendedDose = service.GetAnbefaletDosisPerDøgn(patient.PatientId, lm.LaegemiddelId);
 
       
         Assert.IsTrue(recommendedDose == 9.51, "Recommended dose should be 9.51");
@@ -106,7 +106,7 @@ public class ServiceTest
     {
         // Arrange
         int? nullPatientId = null;
-        int existingLægemiddelId = 1; // Vælg et eksisterende lægemiddelId fra databasen
+        int existingLægemiddelId = 1; 
 
         // Act & Assert
         service.GetAnbefaletDosisPerDøgn(nullPatientId.Value, existingLægemiddelId);

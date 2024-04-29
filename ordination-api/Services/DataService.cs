@@ -9,7 +9,7 @@ namespace Service;
 
 public class DataService
 {
-    private OrdinationContext db { get; }
+    public OrdinationContext db { get; }
 
     public DataService(OrdinationContext db) {
         this.db = db;

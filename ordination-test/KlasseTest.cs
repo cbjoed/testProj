@@ -76,7 +76,23 @@ namespace ordination_test
 
         [TestMethod]
         public void AnvendPNOrdinationt() {
-        ///TODO
+          
+            {
+                // Arrange
+                Patient patient = service.GetPatienter().First();
+                Laegemiddel lm = service.GetLaegemidler().First();
+                PN ordination = new PN(DateTime.Now, DateTime.Now.AddDays(3), 3, lm);
+                Dato validDate = new Dato { dato = DateTime.Now.AddDays(2) };
+
+                service.db.PNs.Add(ordination);
+                service.db.SaveChanges();
+
+                // Act
+                string result = service.AnvendOrdination(patient.PatientId, validDate);
+
+                // Assert
+                Assert.IsNotNull(result);
+            }
         }
     }
 }
